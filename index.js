@@ -14,7 +14,7 @@ app.post('/tokenGenerate', (req, res) => {
         username: 'Nov22',
         email: 'Nov22@coding.com'
     }
-    jwt.sign(user, 'secret', function(err, token) {
+    jwt.sign(user, 'secret', {expiresIn: '60s'}, function(err, token) {
         if(err){
             res.sendStatus(403)
         }
@@ -26,6 +26,20 @@ app.post('/tokenGenerate', (req, res) => {
       });
 })
 
+
+app.post('/verifyToken', extractToken, (req, res) => {
+    jwt.verify(req.token, 'secret', function(err, data) {
+        if(err){
+            res.sendStatus(403);
+        }
+        else{
+            res.json({
+                message: 'User access granted',
+                data
+            })
+        }
+      });
+})
 // middleware
 function extractToken(req, res, next){
     const bearerHeader = req.headers['authorization']; // Bearer token
